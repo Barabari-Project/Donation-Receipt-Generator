@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import navigation hook
 
 const Login = () => {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    
-    // Handle Google login redirect
+    const navigate = useNavigate(); // Initialize navigation hook
+
     const handleLogin = () => {
-        setLoading(true);
+        // Redirect user to backend for Google authentication
         window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
     };
 
@@ -17,28 +15,27 @@ const Login = () => {
             <div className="absolute inset-0 z-0">
                 {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-800 to-yellow-500 opacity-90 animate-background" />
-                
+
                 {/* Angular Polygon Pattern */}
                 <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 320">
                     <polygon fill="rgba(255, 255, 255, 0.05)" points="0,320 1440,320 1440,0 0,0" />
                     <polygon fill="rgba(255, 255, 255, 0.1)" points="200,320 1240,160 1440,0 0,160" />
                 </svg>
-                
+
                 {/* Animated Waves */}
                 <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-blue-600 to-transparent opacity-70 animate-wave" />
             </div>
 
             {/* Login Form */}
             <div className="relative z-10 p-10 bg-gray-800 rounded-3xl shadow-2xl border border-blue-500 backdrop-blur-md max-w-md w-full">
-                <h1 className="text-4xl font-bold text-white mb-4 text-center">Receipts Fast, Impact Faster!</h1>
+                <h1 className="text-4xl font-bold text-white mb-4 text-center">Receipts Fast, Impact Faster!
+                </h1>
                 <p className="text-gray-300 mb-6 text-center">Log in to explore endless possibilities.</p>
                 <button
                     onClick={handleLogin}
-                    className={`w-full py-3 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-yellow-400'} text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105`}
-                    disabled={loading} // Disable button when loading
-                    aria-label="Sign in with Google"
+                    className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105"
                 >
-                    {loading ? 'Signing in...' : 'Sign in with Google'}
+                    Sign in with Google
                 </button>
                 <p className="mt-4 text-center text-gray-400">
                     Found the tool you need? <a href="https://www.barabaricollective.org/services.html" className="text-yellow-400 hover:underline">Click here</a>
@@ -59,13 +56,15 @@ const Login = () => {
                 }
 
                 .animate-background {
-                    background: linear-gradient(270deg, #1e3c72, #f9d423);
+                    background: linear-gradient(270deg, #00b5e2, #ffcc00, #7a00e5, #e60073);
                     background-size: 400% 400%;
                     animation: background 20s ease infinite;
                 }
 
                 .animate-wave {
-                    animation: wave 10s linear infinite;
+                    background-position: 0 0;
+                    background-size: 200% 100%;
+                    animation: wave 4s linear infinite;
                 }
             `}</style>
         </div>
