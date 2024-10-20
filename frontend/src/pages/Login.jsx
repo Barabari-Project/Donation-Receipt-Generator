@@ -4,11 +4,22 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false); // State for loading
+    const [error, setError] = useState(''); // State for error messages
 
     // Handle Google login redirect
-    const handleLogin = () => {
+    const handleLogin = async () => {
         setLoading(true); // Set loading state
-        window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
+        setError(''); // Reset error message
+
+        try {
+            // Redirect to Google login
+            window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
+        } catch (err) {
+            setError('Failed to login. Please try again.'); // Set error message
+            console.error(err); // Log error to console
+        } finally {
+            setLoading(false); // Reset loading state
+        }
     };
 
     return (
@@ -32,10 +43,14 @@ const Login = () => {
             <div className="relative z-10 p-10 bg-gray-800 rounded-3xl shadow-2xl border border-blue-500 backdrop-blur-md max-w-md w-full">
                 <h1 className="text-4xl font-bold text-white mb-4 text-center">Receipts Fast, Impact Faster!</h1>
                 <p className="text-gray-300 mb-6 text-center">Log in to explore endless possibilities.</p>
+                
+                {error && <p className="text-red-500 text-center mb-4">{error}</p>} {/* Error message display */}
+
                 <button
                     onClick={handleLogin}
                     disabled={loading} // Disable button when loading
                     className={`w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    aria-label="Login with Google" // Accessibility label
                 >
                     {loading ? 'Loading...' : 'Login with Google'}
                 </button>

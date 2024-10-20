@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'; // Imports Express framework and required types
 import dotenv from 'dotenv'; // Imports dotenv to manage environment variables
 import cors from 'cors'; // Imports CORS to handle cross-origin requests
-import winston from "winston"; // Logger for tracking errors and server info
+import winston from 'winston'; // Logger for tracking errors and server info
 import routes from './routes/index.js'; // Importing routes from the routes folder
 import session from 'express-session'; // Importing session management middleware
 import passport from 'passport'; // Passport for handling authentication
@@ -50,7 +50,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID, // Google client ID from .env
     clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Google client secret from .env
-    callbackURL: '/auth/google/callback' // URL where Google sends user back after login
+    callbackURL: `${process.env.FRONTEND_BASE_URL}/auth/google/callback`, // Updated callback URL
 }, (accessToken, refreshToken, profile, done) => {
     // Passport callback after successful login, sending user profile to done()
     return done(null, profile);
@@ -112,6 +112,7 @@ app.get("/auth/google",
 app.get('/auth/google/callback',
     passport.authenticate("google", { session: true }), // Authenticate the user and manage session
     (req, res) => {
+        logger.info(`User logged in: ${req.user.email}`); // Log the user info
         res.redirect(`${process.env.FRONTEND_BASE_URL}`); // Redirect user to frontend after login
     }
 );
