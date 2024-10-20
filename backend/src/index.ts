@@ -31,9 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 // Session middleware for managing user sessions
 app.use(
     session({
-        secret: [process.env.COOKIE_SECRET], // Secret key for sessions from .env file
+        secret: process.env.COOKIE_SECRET || 'default_secret', // Secret key for sessions from .env file
         cookie: {
-            secure: process.env.NODE_ENV === "production" ? true : "auto", // Secure cookies for production only
+            secure: process.env.NODE_ENV === "production", // Secure cookies for production only
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Cross-site cookie setting
             maxAge: 30 * 24 * 60 * 60 * 1000, // Set cookie expiry time for 30 days
         },
@@ -119,7 +119,10 @@ app.get('/auth/google/callback',
 // Route to handle user logout
 app.get('/logout', (req, res, next) => {
     req.logout((err) => { // Use Passport's logout method
-        if (err) return next(err); // If error, pass it to the next middleware
+        if (err) {
+            logger.error('Logout error:', err); // Log the error
+            return res.status(500).json({ error: 'Logout failed' }); // Respond with an error
+        }
         res.status(200).json({ message: 'Logged out successfully!' }); // Respond with success
     });
 });
@@ -132,6 +135,11 @@ app.get('/user', (req, res) => {
     res.json(req.user); // Send user profile data if authenticated
 });
 
+// Catch-all route for undefined routes
+app.use((req: Request, res: Response) => {
+    res.status(404).json({ error: 'Not Found' }); // Respond with a 404 error for undefined routes
+});
+
 // Start the server and log that it is running
 const server = app.listen(PORT, () => {
     logger.info(`Server listening at http://localhost:${PORT}`); // Log server start message
@@ -141,7 +149,7 @@ const server = app.listen(PORT, () => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(err); // Log the error
     logger.error(err.message); // Log the error message
-    res.redirect(`${process.env.FRONTEND_BASE_URL}`); // Redirect to frontend on error
+    res.status(500).json({ error: 'Internal Server Error' }); // Respond with 500 error
 });
 
 // Handle uncaught exceptions and gracefully shut down the server
