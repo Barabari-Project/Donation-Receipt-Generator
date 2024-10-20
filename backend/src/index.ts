@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'; // Imports Express framework and required types
 import dotenv from 'dotenv'; // Imports dotenv to manage environment variables
 import cors from 'cors'; // Imports CORS to handle cross-origin requests
-import winston from 'winston'; // Logger for tracking errors and server info
+import winston from "winston"; // Logger for tracking errors and server info
 import routes from './routes/index.js'; // Importing routes from the routes folder
 import session from 'express-session'; // Importing session management middleware
 import passport from 'passport'; // Passport for handling authentication
@@ -31,9 +31,9 @@ app.use(express.urlencoded({ extended: true }));
 // Session middleware for managing user sessions
 app.use(
     session({
-        secret: process.env.COOKIE_SECRET || 'default_secret', // Secret key for sessions from .env file
+        secret: [process.env.COOKIE_SECRET], // Secret key for sessions from .env file
         cookie: {
-            secure: process.env.NODE_ENV === "production", // Secure cookies for production only
+            secure: process.env.NODE_ENV === "production" ? true : "auto", // Secure cookies for production only
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Cross-site cookie setting
             maxAge: 30 * 24 * 60 * 60 * 1000, // Set cookie expiry time for 30 days
         },
@@ -50,7 +50,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID, // Google client ID from .env
     clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Google client secret from .env
-    callbackURL: `${process.env.FRONTEND_BASE_URL}/auth/google/callback`, // Updated callback URL
+    callbackURL: '/auth/google/callback' // URL where Google sends user back after login
 }, (accessToken, refreshToken, profile, done) => {
     // Passport callback after successful login, sending user profile to done()
     return done(null, profile);
@@ -112,7 +112,6 @@ app.get("/auth/google",
 app.get('/auth/google/callback',
     passport.authenticate("google", { session: true }), // Authenticate the user and manage session
     (req, res) => {
-        logger.info(`User logged in: ${req.user.email}`); // Log the user info
         res.redirect(`${process.env.FRONTEND_BASE_URL}`); // Redirect user to frontend after login
     }
 );
@@ -120,10 +119,7 @@ app.get('/auth/google/callback',
 // Route to handle user logout
 app.get('/logout', (req, res, next) => {
     req.logout((err) => { // Use Passport's logout method
-        if (err) {
-            logger.error('Logout error:', err); // Log the error
-            return res.status(500).json({ error: 'Logout failed' }); // Respond with an error
-        }
+        if (err) return next(err); // If error, pass it to the next middleware
         res.status(200).json({ message: 'Logged out successfully!' }); // Respond with success
     });
 });
@@ -136,11 +132,6 @@ app.get('/user', (req, res) => {
     res.json(req.user); // Send user profile data if authenticated
 });
 
-// Catch-all route for undefined routes
-app.use((req: Request, res: Response) => {
-    res.status(404).json({ error: 'Not Found' }); // Respond with a 404 error for undefined routes
-});
-
 // Start the server and log that it is running
 const server = app.listen(PORT, () => {
     logger.info(`Server listening at http://localhost:${PORT}`); // Log server start message
@@ -150,7 +141,7 @@ const server = app.listen(PORT, () => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(err); // Log the error
     logger.error(err.message); // Log the error message
-    res.status(500).json({ error: 'Internal Server Error' }); // Respond with 500 error
+    res.redirect(`${process.env.FRONTEND_BASE_URL}`); // Redirect to frontend on error
 });
 
 // Handle uncaught exceptions and gracefully shut down the server
