@@ -51,9 +51,9 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID, // Google client ID from .env
     clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Google client secret from .env
-    callbackURL: '/auth/google/callback' // URL where Google sends user back after login
-}, (accessToken, refreshToken, profile, done) => {
-    // Passport callback after successful login, sending user profile to done()
+    callbackURL: process.env.BACKEND_BASE_URL+'/auth/google/callback' // URL where Google sends user back after login
+}, (accessToken: any, refreshToken: any, profile: any, done: (arg0: null, arg1: any) => any) => {
+    // Passport callback after successful login, sending user profile to done ()
     return done(null, profile);
 }));
 
