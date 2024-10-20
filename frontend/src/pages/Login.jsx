@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     
     // Handle Google login redirect
     const handleLogin = () => {
+        setLoading(true);
         window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
     };
 
@@ -32,9 +34,11 @@ const Login = () => {
                 <p className="text-gray-300 mb-6 text-center">Log in to explore endless possibilities.</p>
                 <button
                     onClick={handleLogin}
-                    className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105"
+                    className={`w-full py-3 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-yellow-400'} text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105`}
+                    disabled={loading} // Disable button when loading
+                    aria-label="Sign in with Google"
                 >
-                    Sign in with Google
+                    {loading ? 'Signing in...' : 'Sign in with Google'}
                 </button>
                 <p className="mt-4 text-center text-gray-400">
                     Found the tool you need? <a href="https://www.barabaricollective.org/services.html" className="text-yellow-400 hover:underline">Click here</a>
