@@ -1,9 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import navigation hook
 
 const Login = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Initialize navigation hook
+
     const handleLogin = () => {
+        // Redirect user to backend for Google authentication
         window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
     };
 
@@ -42,27 +44,29 @@ const Login = () => {
 
             {/* Custom Animations */}
             <style jsx>{`
-            @keyframes background {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
+                @keyframes background {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
 
-            @keyframes wave {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-            }
+                @keyframes wave {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
 
-            .animate-background {
-                background: linear-gradient(270deg, #1e3c72, #f9d423);
-                background-size: 400% 400%;
-                animation: background 20s ease infinite;
-            }
+                .animate-background {
+                    background: linear-gradient(270deg, #00b5e2, #ffcc00, #7a00e5, #e60073);
+                    background-size: 400% 400%;
+                    animation: background 20s ease infinite;
+                }
 
-            .animate-wave {
-                animation: wave 10s linear infinite;
-            }
-        `}</style>
+                .animate-wave {
+                    background-position: 0 0;
+                    background-size: 200% 100%;
+                    animation: wave 4s linear infinite;
+                }
+            `}</style>
         </div>
     );
 };

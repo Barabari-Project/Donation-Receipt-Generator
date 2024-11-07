@@ -41,6 +41,7 @@ $dark-text-color: #333;
   gap: 1rem;
   text-align: center;
 }
+
 .fileInputContainer {
   display: flex;
   justify-content: center;
@@ -100,6 +101,7 @@ $dark-text-color: #333;
   &.loading {
     background-color: lighten($primary-color, 30%);
     cursor: not-allowed;
+    transition: background .2s ease-in-out;
   }
 }
 .submitButton:hover {
@@ -125,48 +127,19 @@ $dark-text-color: #333;
   color: yellow;
   margin-left: 5px;
 }
-@keyframes background {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 
-@keyframes wave {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-background {
-  background: linear-gradient(270deg, #3b007f, #0c0e32);
-  background-size: 400% 400%;
-  animation: background 20s ease infinite;
-}
-
-.animate-wave {
-  animation: wave 10s linear infinite;
-}
 
 .input-sec {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(165, 25, 25, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(15px);
   color: white;
-  // padding: 8px;
   border-radius: 12px;
   margin-bottom: 11px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
 }
+
 
 .input-sec:focus {
   outline: none;
@@ -183,4 +156,3 @@ $dark-text-color: #333;
 .file-label:hover {
   color: rgba(255, 255, 255, 0.9);
 }
-

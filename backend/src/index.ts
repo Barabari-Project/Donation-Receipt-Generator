@@ -6,29 +6,32 @@ import routes from './routes/index.js';
 import session from 'express-session';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import path from 'path';
 
 dotenv.config();
 
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '3000');
 
+// CORS configuration to allow cross-origin requests from the frontend
 app.use(
     cors({
         credentials: true,
-        origin: process.env.FRONTEND_BASE_URL
+        origin: process.env.FRONTEND_BASE_URL, // Ensure this URL is correctly set
     })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session middleware for managing user sessions
 app.use(
     session({
-        secret: [process.env.COOKIE_SECRET],
+        secret: process.env.COOKIE_SECRET!,
         cookie: {
-            secure: process.env.NODE_ENV === "production" ? true : "auto",
+            secure: process.env.NODE_ENV === "production", // Automatically secure cookies in production
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 30 * 24 * 60 * 60 * 1000,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         },
         resave: false,
         saveUninitialized: false,
@@ -40,36 +43,41 @@ app.use(passport.session());
 
 // Configure Passport with Google OAuth strategy
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.BACKEND_BASE_URL + '/auth/google/callback'
-}, (accessToken, refreshToken, profile, done) => {
-    const userData = profile._json;
-    if (process.env.SOS_EMAIL == userData.email || process.env.RAKSHA_EMAIL == userData.email) {
-        return done(null, profile);
+    clientID: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    callbackURL: '/auth/google/callback', // Ensure this is the correct callback URL
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        // Here, you can process the user profile and store only the essential details in session
+        const user = {
+            id: profile.id,
+            name: profile.displayName,
+            email: profile.emails[0].value,
+        };
+
+        // Store the minimal profile data in session
+        return done(null, user);
+    } catch (error) {
+        return done(error, null);
     }
-    done(new Error('Invalid Authentication'), false, 'Invalid Authentication');
 }));
 
+// Serialize and deserialize user to store in session
 passport.serializeUser((user, done) => {
-    done(null, user);
+    done(null, user); // Ensure the user object is being stored in the session correctly
 });
 
 passport.deserializeUser((obj, done) => {
-    done(null, obj);
+    done(null, obj); // Ensure the user is retrieved correctly from the session
 });
 
-export const logger = winston.createLogger({
-    // Log only if level is less than (meaning more severe) or equal to this
+// Logger setup using Winston
+const logger = winston.createLogger({
     level: "info",
-    // Use timestamp and printf to create a standard log format
     format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.printf(
-            (data) => `${data.timestamp} ${data.level}: ${data.message}`
-        )
+        winston.format.printf((data) => `${data.timestamp} ${data.level}: ${data.message}`)
     ),
-    // Log to the console and a file
     transports: [
         new winston.transports.Console(),
         new winston.transports.File({ filename: "logs/app.log" }),
@@ -77,11 +85,11 @@ export const logger = winston.createLogger({
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-    // Log an info message for each incoming request
     logger.info(`Received a ${req.method} request for ${req.url}`);
     next();
 });
 
+// Health check route
 app.get('/health', (req: Request, res: Response) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -89,35 +97,35 @@ app.get('/health', (req: Request, res: Response) => {
     res.sendStatus(200);
 });
 
+// Attach routes
 app.use(routes);
 
-// Routes for Google authentication
-app.get("/auth/google",
-    passport.authenticate("google", {
-        scope: [
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email'
-        ]
-    })
-);
+// Google OAuth login route
+app.get("/auth/google", passport.authenticate("google", {
+    scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email'
+    ]
+}));
 
+// Google OAuth callback route
 app.get('/auth/google/callback',
     passport.authenticate("google", { session: true }),
     (req, res) => {
+        // Redirect to frontend after successful login
         res.redirect(`${process.env.FRONTEND_BASE_URL}`);
     }
 );
 
-// Route to log out
+// Route to handle logout
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
-        // Broadcast logout event to other tabs
         res.status(200).json({ message: 'Logged out successfully!' });
     });
 });
 
-// Route to get user profile
+// Route to get the logged-in user's profile
 app.get('/user', (req, res) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -125,21 +133,27 @@ app.get('/user', (req, res) => {
     res.json(req.user);
 });
 
+// Serve static files from the React app in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    });
+}
+
+// Start server
 const server = app.listen(PORT, () => {
     logger.info(`Server listening at http://localhost:${PORT}`);
 });
 
+// Error-handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(err);
-    logger.error(err.message);
     res.redirect(`${process.env.FRONTEND_BASE_URL}`);
 });
 
-// Handle uncaught exceptions
+// Graceful shutdown on uncaught exceptions
 process.on('uncaughtException', (err) => {
-    // Gracefully close the server and then exit
     logger.error('Uncaught Exception:', err);
-    server.close(() => {
-        process.exit(1);
-    });
+    server.close(() => { process.exit(1); });
 });
