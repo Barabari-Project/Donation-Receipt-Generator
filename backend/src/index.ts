@@ -20,9 +20,12 @@ app.use(
         origin: process.env.FRONTEND_BASE_URL, // Ensure this URL is correctly set
     })
 );
+console.log('CORS setup complete');
 
+// Parse incoming JSON and URL encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+console.log('Body parsers set up');
 
 // Session middleware for managing user sessions
 app.use(
@@ -37,9 +40,12 @@ app.use(
         saveUninitialized: false,
     })
 );
+console.log('Session middleware added');
 
+// Initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
+console.log('Passport initialized');
 
 // Configure Passport with Google OAuth strategy
 passport.use(new GoogleStrategy({
@@ -48,26 +54,28 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback', // Ensure this is the correct callback URL
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        // Here, you can process the user profile and store only the essential details in session
+        console.log('Google OAuth callback:', profile); // Debugging profile
         const user = {
             id: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
         };
 
-        // Store the minimal profile data in session
         return done(null, user);
     } catch (error) {
+        console.error('Error during Google OAuth callback:', error); // Debugging error
         return done(error, null);
     }
 }));
 
 // Serialize and deserialize user to store in session
 passport.serializeUser((user, done) => {
+    console.log('Serializing user:', user); // Debugging serialized user
     done(null, user); // Ensure the user object is being stored in the session correctly
 });
 
 passport.deserializeUser((obj, done) => {
+    console.log('Deserializing user:', obj); // Debugging deserialized user
     done(null, obj); // Ensure the user is retrieved correctly from the session
 });
 
@@ -91,7 +99,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Health check route
 app.get('/health', (req: Request, res: Response) => {
+    console.log('Health check route accessed'); // Debugging health check
     if (!req.user) {
+        console.log('Unauthorized access to health check'); // Debugging unauthorized
         return res.status(401).json({ error: 'Unauthorized' });
     }
     res.sendStatus(200);
@@ -99,6 +109,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Attach routes
 app.use(routes);
+console.log('Routes attached');
 
 // Google OAuth login route
 app.get("/auth/google", passport.authenticate("google", {
@@ -107,18 +118,20 @@ app.get("/auth/google", passport.authenticate("google", {
         'https://www.googleapis.com/auth/userinfo.email'
     ]
 }));
+console.log('Google OAuth login route added');
 
 // Google OAuth callback route
 app.get('/auth/google/callback',
     passport.authenticate("google", { session: true }),
     (req, res) => {
-        // Redirect to frontend after successful login
+        console.log('Google OAuth callback success:', req.user); // Debugging successful login
         res.redirect(`${process.env.FRONTEND_BASE_URL}`);
     }
 );
 
 // Route to handle logout
 app.get('/logout', (req, res, next) => {
+    console.log('Logout route accessed'); // Debugging logout
     req.logout((err) => {
         if (err) return next(err);
         res.status(200).json({ message: 'Logged out successfully!' });
@@ -127,7 +140,9 @@ app.get('/logout', (req, res, next) => {
 
 // Route to get the logged-in user's profile
 app.get('/user', (req, res) => {
+    console.log('User profile route accessed'); // Debugging user profile access
     if (!req.user) {
+        console.log('Unauthorized access to user profile'); // Debugging unauthorized
         return res.status(401).json({ error: 'Unauthorized' });
     }
     res.json(req.user);
@@ -137,6 +152,7 @@ app.get('/user', (req, res) => {
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/build')));
     app.get('*', (req, res) => {
+        console.log('Serving React app'); // Debugging React app serving
         res.sendFile(path.join(__dirname, '../client/build/index.html'));
     });
 }
@@ -144,16 +160,19 @@ if (process.env.NODE_ENV === 'production') {
 // Start server
 const server = app.listen(PORT, () => {
     logger.info(`Server listening at http://localhost:${PORT}`);
+    console.log(`Server listening at http://localhost:${PORT}`); // Debugging server start
 });
 
 // Error-handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     logger.error(err);
+    console.error('Error occurred:', err); // Debugging errors
     res.redirect(`${process.env.FRONTEND_BASE_URL}`);
 });
 
 // Graceful shutdown on uncaught exceptions
 process.on('uncaughtException', (err) => {
     logger.error('Uncaught Exception:', err);
+    console.error('Uncaught Exception:', err); // Debugging uncaught exception
     server.close(() => { process.exit(1); });
 });
