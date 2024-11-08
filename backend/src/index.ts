@@ -25,19 +25,19 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
 app.use(
     session({
-        secret: [process.env.COOKIE_SECRET], 
-        cookie: {
-            secure: process.env.NODE_ENV === "production" ? true : "auto", 
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", 
-            maxAge: 30 * 24 * 60 * 60 * 1000, 
-        },
+        secret: process.env.COOKIE_SECRET, 
         resave: false,
         saveUninitialized: false,
+        cookie: {
+            secure: process.env.NODE_ENV === 'production', // Set to false for local dev
+            sameSite: 'lax',
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        },
     })
 );
+
 
 // Initialize Passport
 app.use(passport.initialize());
@@ -48,8 +48,13 @@ passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: '/auth/google/callback'
-}, (accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
+}, async (accessToken, refreshToken, profile, done) => {
+    try {
+        // You can add logic here to store the user's profile in your database
+        return done(null, profile); // Passing profile object to session
+    } catch (err) {
+        done(err, null);
+    }
 }));
 
 // Serialize and Deserialize user
@@ -76,17 +81,12 @@ export const logger = winston.createLogger({
     ],
 });
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-    logger.info(`Received a ${req.method} request for ${req.url}`);
-    next();
+passport.serializeUser((user, done) => {
+    done(null, user); // Store user object in session
 });
 
-// Health check route
-app.get('/health', (req: Request, res: Response) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-    res.sendStatus(200);
+passport.deserializeUser((user, done) => {
+    done(null, user); // Retrieve user from session
 });
 
 // Attach routes
@@ -103,13 +103,14 @@ app.get("/auth/google",
 );
 
 // Google OAuth callback route
-app.get('/auth/google/callback',
-    passport.authenticate("google", { session: true }),
+app.get('/auth/google/callback', 
+    passport.authenticate("google", { session: true }), 
     (req, res) => {
-        // Redirect to the frontend after login
-        res.redirect(`${process.env.FRONTEND_BASE_URL}/home`); // Make sure this points to your home route or dashboard
+        console.log("Google login success:", req.user); // Log the authenticated user
+        res.redirect(process.env.FRONTEND_BASE_URL);
     }
 );
+
 
 // Logout route
 app.get('/logout', (req, res, next) => {
@@ -124,8 +125,9 @@ app.get('/user', (req, res) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    res.json(req.user);
+    res.json(req.user); // Should return the authenticated user's profile
 });
+
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
