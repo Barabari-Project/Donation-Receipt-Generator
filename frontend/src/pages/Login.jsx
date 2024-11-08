@@ -6,7 +6,7 @@ const Login = () => {
 
     const handleLogin = () => {
         // Redirect user to backend for Google authentication
-        window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
+        window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`, '_blank');
     };
 
     return (
