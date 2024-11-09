@@ -47,15 +47,11 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/auth/google/callback'
-}, async (accessToken, refreshToken, profile, done) => {
-    try {
-        // You can add logic here to store the user's profile in your database
-        return done(null, profile); // Passing profile object to session
-    } catch (err) {
-        done(err, null);
-    }
+    callbackURL: "https://my-backend-3g7h.onrender.com/auth/google/callback", // This must match what you registered
+}, function (token, tokenSecret, profile, done) {
+    return done(null, profile);
 }));
+
 
 // Serialize and Deserialize user
 passport.serializeUser((user, done) => {
