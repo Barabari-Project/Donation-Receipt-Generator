@@ -7,9 +7,8 @@ import session from 'express-session';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import path from 'path';
-
 dotenv.config();
-
+//code begains
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '3000');
 
