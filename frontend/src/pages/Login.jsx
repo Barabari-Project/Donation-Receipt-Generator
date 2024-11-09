@@ -1,12 +1,25 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import navigation hook
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const navigate = useNavigate(); // Initialize navigation hook
+    const navigate = useNavigate();
 
-    const handleLogin = () => {
-        // Redirect user to backend for Google authentication
-        window.open(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`, '_blank');
+    const handleLogin = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if (data.success) {
+                navigate('/home');
+            } else {
+                alert('Authentication failed. Please try again.');
+            }
+        } catch (error) {
+            console.error("Login Error:", error);
+            alert('Error occurred during login. Please check your configuration.');
+        }
     };
 
     return (
