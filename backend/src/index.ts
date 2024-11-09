@@ -27,16 +27,17 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
     session({
-        secret: process.env.COOKIE_SECRET, 
+        secret: process.env.COOKIE_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            secure: process.env.NODE_ENV === 'production', // Set to false for local dev
+            secure: process.env.NODE_ENV === 'production', // Set to true in production for HTTPS
             sameSite: 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         },
     })
 );
+
 
 
 // Initialize Passport
@@ -99,13 +100,15 @@ app.get("/auth/google",
 );
 
 // Google OAuth callback route
+// Google OAuth callback route
 app.get('/auth/google/callback', 
     passport.authenticate("google", { session: true }), 
     (req, res) => {
         console.log("Google login success:", req.user); // Log the authenticated user
-        res.redirect(process.env.FRONTEND_BASE_URL);
+        res.redirect(process.env.FRONTEND_BASE_URL + '/home'); // Redirect to the Home page after successful login
     }
 );
+
 
 
 // Logout route

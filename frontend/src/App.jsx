@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import './App.css'
+import './App.css';
 import ProtectedRoute from './components/ProtectedRoute';
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import Home from './pages/Home';
 
 import axios from 'axios';
@@ -12,7 +12,8 @@ import Login from './pages/Login';
 
 function App() {
   const [email, setEmail] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);  // Set loading initially to true
+  const navigate = useNavigate();  // React Router's useNavigate hook for navigation
 
   const Layout = () => (
     <>
@@ -52,20 +53,34 @@ function App() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
-          withCredentials: true,
+          withCredentials: true,  // Include credentials in the request
         });
-        setEmail(response.data.emails[0].verified ? response.data.emails[0].value : null);
+
+        if (response.data.error) {
+          // Redirect to login if authentication failed
+          navigate('/login');
+        } else {
+          // If authenticated, set email to the verified email
+          setEmail(response.data.emails[0].verified ? response.data.emails[0].value : null);
+          navigate('/home'); // Redirect to home page if authenticated
+        }
       } catch (error) {
         setEmail(null);
+        navigate('/login'); // Redirect to login on error
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading once the request is complete
       }
-    }
-    fetchUser();
-  }, []);
+    };
+
+    fetchUser(); // Call the function when the component mounts
+  }, [navigate]);  // Include navigate in the dependency array
+
+  if (loading) {
+    return <div>Loading...</div>; // Optionally display a loading message while checking auth
+  }
+
   return (
     <>
       <RouterProvider router={router} />
@@ -73,4 +88,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
