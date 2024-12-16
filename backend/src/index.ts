@@ -38,11 +38,12 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.BACKEND_BASE_URL + '/auth/google/callback'
 }, (accessToken, refreshToken, profile, done) => {
-    const userData = profile._json;
-    if (process.env.SOS_EMAIL == userData.email || process.env.RAKSHA_EMAIL == userData.email) {
-        return done(null, profile);
-    }
-    done(new Error('Invalid Authentication'), false);
+    return done(null, profile);
+    // const userData = profile._json;
+    // if (process.env.SOS_EMAIL == userData.email || process.env.RAKSHA_EMAIL == userData.email) {
+    //     return done(null, profile);
+    // }
+    // done(new Error('Invalid Authentication'), false);
 }));
 
 passport.serializeUser((user, done) => {
@@ -87,7 +88,7 @@ app.use(routes);
 
 // Routes for Google authentication
 app.get("/auth/google",
-    passport.authenticate("google", { scope: ['profile', 'email'] }));
+    passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account"  }));
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
     res.redirect(process.env.FRONTEND_BASE_URL);

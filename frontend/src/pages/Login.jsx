@@ -6,6 +6,11 @@ const Login = () => {
     const handleLogin = () => {
         window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
     };
+    // return (
+    //     <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/auth/google'}>
+    //         <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105">Login with Google</button>
+    //     </a>
+    // )
 
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden">
@@ -29,12 +34,9 @@ const Login = () => {
                 <h1 className="text-4xl font-bold text-white mb-4 text-center">Receipts Fast, Impact Faster!
                 </h1>
                 <p className="text-gray-300 mb-6 text-center">Log in to explore endless possibilities.</p>
-                <button
-                    onClick={handleLogin}
-                    className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                >
-                    Sign in with Google
-                </button>
+                <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/auth/google'}>
+                    <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105">Login with Google</button>
+                </a>
                 <p className="mt-4 text-center text-gray-400">
                     Found the tool you need? <a href="https://www.barabaricollective.org/services.html" className="text-yellow-400 hover:underline">Click here</a>
                 </p>

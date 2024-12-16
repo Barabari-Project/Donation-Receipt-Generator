@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import './App.css'
-import ProtectedRoute from './components/ProtectedRoute';
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
 
 import axios from 'axios';
-import PublicRoute from './components/PublicRoute';
 import Hero from './pages/Hero';
 import Footer from './pages/Footer';
 import Login from './pages/Login';
@@ -16,39 +14,13 @@ function App() {
 
   const Layout = () => (
     <>
-      <Hero setEmail={setEmail} email={email} />
+      <Hero />
       <main>
         <Outlet /> {/* Outlet will render the appropriate route content */}
       </main>
       <Footer />
     </>
   );
-
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Layout />, // Layout for the main structure
-      children: [
-        {
-          path: "/",
-          element: (
-            <PublicRoute email={email}>
-              <Login />
-            </PublicRoute>
-          ),
-        },
-        {
-          path: "/home",
-          element: (
-            <ProtectedRoute email={email}>
-              <Home email={email} setEmail={setEmail} />
-            </ProtectedRoute>
-          ),
-        },
-        // Add other routes if needed
-      ],
-    },
-  ]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -67,9 +39,14 @@ function App() {
     fetchUser();
   }, []);
   return (
-    <>
-      <RouterProvider router={router} />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={<Home />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,21 +1,20 @@
 import axios from 'axios';
 import React from 'react'
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
 
-const Hero = ({ setEmail,email }) => {
+const Hero = () => {
   const navigate = useNavigate();
-  const handleLogout = async () => {
-    try {
-      await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`, {
-        withCredentials: true,
-      });
-      navigate('/');
-      setEmail(null);
-    } catch (error) {
-      toast.error("Internal Server Error. Please try again later.");
-    }
-  }
+  // const handleLogout = async () => {
+  //   try {
+  //     await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`, {
+  //       withCredentials: true,
+  //     });
+  //     navigate('/');
+  //   } catch (error) {
+  //     toast.error("Internal Server Error. Please try again later.");
+  //   }
+  // }
   return (
     <header className="z-50 fixed top-0 w-full bg-white">
       <div className="h-[70px]  flex items-center px-8 md:px-12 lg:px-32 xl:px-48 justify-between">
@@ -42,11 +41,12 @@ const Hero = ({ setEmail,email }) => {
               Hire From Us
             </button>
           </a>
-          {email &&
-            <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300" onClick={handleLogout}>
-              Logout
-            </button>
-          }
+          {/* {email && */}
+          {/* <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300" onClick={handleLogout}>
+            Logout
+          </button> */}
+          <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>Logout</a>
+          {/* } */}
         </div>
         <div id="hamburger" className="block md:hidden animate__zoomInDown">
           <input id="menu-toggle" className="hidden peer" type="checkbox" />
@@ -76,11 +76,12 @@ const Hero = ({ setEmail,email }) => {
                   Hire From Us
                 </button>
               </a>
-              {email &&
-                <button className="bg-[#3cc88f] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none rounded-lg transition-colors duration-300" onClick={handleLogout}>
-                  Logout
-                </button>
-              }
+              {/* {email && */}
+              {/* <button className="bg-[#3cc88f] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none rounded-lg transition-colors duration-300" onClick={handleLogout}>
+                Logout
+              </button> */}
+              <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>Logout</a>
+              {/* // } */}
             </div>
           </div>
         </div>

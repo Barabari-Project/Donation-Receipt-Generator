@@ -15,6 +15,7 @@ import loaderAnimation from "../assets/lottie/loaderAnimation.json";
 import classNames from "classnames";
 import MultiEmailInput from "../components/MultiEmailInput/MultiEmailInput";
 import encryptData from "../utils/encryptData";
+import { useNavigate } from "react-router-dom";
 // import linkedIn from "./assets/linkedIn.png";
 // import instagram from "./assets/instagram.png"
 
@@ -52,7 +53,7 @@ import encryptData from "../utils/encryptData";
 const initialInputState = {
     starting: "",
     ending: "",
-    
+
     password: "",
     ccEmails: [],
     file: null,
@@ -60,7 +61,7 @@ const initialInputState = {
 };
 
 const initialErrorState = {
-    
+
     passwordError: "",
     startingError: "",
     endingError: "",
@@ -107,6 +108,8 @@ const errorReducer = (state, action) => {
 
 const Home = ({ email, setEmail }) => {
 
+    const navigate = useNavigate();
+
     const [inputState, dispatchInput] = useReducer(
         inputReducer,
         initialInputState
@@ -126,6 +129,9 @@ const Home = ({ email, setEmail }) => {
                     withCredentials: true,
                 });
             } catch (error) {
+                if (401 == error.response.status){
+                    navigate('/')
+                }
                 toast.error("Internal Server Error | please contact to developers");
             }
         };
