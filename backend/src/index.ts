@@ -88,10 +88,12 @@ app.use(routes);
 
 // Routes for Google authentication
 app.get("/auth/google",
-    passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account"  }));
+    passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account" }));
+
+app.get('/login', passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account" }));
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect(process.env.FRONTEND_BASE_URL+'/home');
+    res.redirect(process.env.FRONTEND_BASE_URL + '/home');
 });
 
 // Route to log out

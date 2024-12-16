@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
 
 const Hero = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState(null);
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
           withCredentials: true,
         });
-        setIsLoggedIn(true);
+        setEmail(response.data.user.emails[0].value);
       } catch (error) {
       } finally {
         setLoading(false);
@@ -47,7 +47,7 @@ const Hero = () => {
               Hire From Us
             </button>
           </a>
-          {isLoggedIn && (
+          {email && (
             <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>
               <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300">
                 Logout
@@ -83,7 +83,7 @@ const Hero = () => {
                   Hire From Us
                 </button>
               </a>
-              {isLoggedIn && (
+              {email && (
                 <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>
                   <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300">
                     Logout
