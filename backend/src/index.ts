@@ -36,7 +36,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.BACKEND_BASE_URL + '/auth/google/callback'
+    callbackURL: 'http://localhost:3000/auth/google/callback'
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile);
     // const userData = profile._json;
@@ -91,7 +91,7 @@ app.get("/auth/google",
     passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account"  }));
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect(process.env.FRONTEND_BASE_URL);
+    res.redirect(process.env.FRONTEND_BASE_URL+'/home');
 });
 
 // Route to log out

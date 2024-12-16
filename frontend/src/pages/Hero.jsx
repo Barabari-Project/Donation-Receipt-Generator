@@ -1,20 +1,26 @@
 import axios from 'axios';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
 
 const Hero = () => {
-  const navigate = useNavigate();
-  // const handleLogout = async () => {
-  //   try {
-  //     await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`, {
-  //       withCredentials: true,
-  //     });
-  //     navigate('/');
-  //   } catch (error) {
-  //     toast.error("Internal Server Error. Please try again later.");
-  //   }
-  // }
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
+          withCredentials: true,
+        });
+        setIsLoggedIn(true);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUser();
+  }, []);
   return (
     <header className="z-50 fixed top-0 w-full bg-white">
       <div className="h-[70px]  flex items-center px-8 md:px-12 lg:px-32 xl:px-48 justify-between">
@@ -41,12 +47,13 @@ const Hero = () => {
               Hire From Us
             </button>
           </a>
-          {/* {email && */}
-          {/* <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300" onClick={handleLogout}>
-            Logout
-          </button> */}
-          <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>Logout</a>
-          {/* } */}
+          {isLoggedIn && (
+            <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>
+              <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300">
+                Logout
+              </button>
+            </a>
+          )}
         </div>
         <div id="hamburger" className="block md:hidden animate__zoomInDown">
           <input id="menu-toggle" className="hidden peer" type="checkbox" />
@@ -76,12 +83,13 @@ const Hero = () => {
                   Hire From Us
                 </button>
               </a>
-              {/* {email && */}
-              {/* <button className="bg-[#3cc88f] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none rounded-lg transition-colors duration-300" onClick={handleLogout}>
-                Logout
-              </button> */}
-              <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>Logout</a>
-              {/* // } */}
+              {isLoggedIn && (
+                <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/logout'}>
+                  <button className="bg-[#324498] hover:bg-[#4bd98f] text-white px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300">
+                    Logout
+                  </button>
+                </a>
+              )}
             </div>
           </div>
         </div>

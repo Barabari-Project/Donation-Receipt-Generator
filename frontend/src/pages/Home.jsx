@@ -106,7 +106,7 @@ const errorReducer = (state, action) => {
     }
 };
 
-const Home = ({ email, setEmail }) => {
+const Home = () => {
 
     const navigate = useNavigate();
 
@@ -125,11 +125,14 @@ const Home = ({ email, setEmail }) => {
     useEffect(() => {
         const awakeServer = async () => {
             try {
-                await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/health`, {
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
                     withCredentials: true,
                 });
+                console.log(response.data.user.emails[0].verified);
+                setEmail(response.data.user.emails[0].value);
             } catch (error) {
-                if (401 == error.response.status){
+                console.log(error);
+                if (401 == error.response.status) {
                     navigate('/')
                 }
                 toast.error("Internal Server Error | please contact to developers");

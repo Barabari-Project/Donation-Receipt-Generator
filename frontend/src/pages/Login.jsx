@@ -3,14 +3,21 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const navigate = useNavigate();
-    const handleLogin = () => {
-        window.location.href = `${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`;
-    };
-    // return (
-    //     <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/auth/google'}>
-    //         <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105">Login with Google</button>
-    //     </a>
-    // )
+    useEffect(() => {
+        const fetchUser = async () => {
+            setLoading(true);
+            try {
+                await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
+                    withCredentials: true,
+                });
+                navigate('/home');
+            } catch (error) {
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchUser();
+    }, []);
 
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden">
