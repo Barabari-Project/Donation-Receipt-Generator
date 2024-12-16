@@ -121,6 +121,7 @@ const Home = () => {
     );
 
     const [isLoading, setIsLoading] = useState(false);
+    const [email, setEmail] = useState(null);
 
     useEffect(() => {
         const awakeServer = async () => {
