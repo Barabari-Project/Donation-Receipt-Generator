@@ -22,18 +22,12 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-    session({
-        secret: [process.env.COOKIE_SECRET],
-        cookie: {
-            secure: process.env.NODE_ENV === "production" ? true : "auto",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-        },
-        resave: false,
-        saveUninitialized: false,
-    })
-);
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    // cookie: { secure: false }
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -48,7 +42,7 @@ passport.use(new GoogleStrategy({
     if (process.env.SOS_EMAIL == userData.email || process.env.RAKSHA_EMAIL == userData.email) {
         return done(null, profile);
     }
-    done(new Error('Invalid Authentication'), false, 'Invalid Authentication');
+    done(new Error('Invalid Authentication'), false);
 }));
 
 passport.serializeUser((user, done) => {
@@ -93,27 +87,18 @@ app.use(routes);
 
 // Routes for Google authentication
 app.get("/auth/google",
-    passport.authenticate("google", {
-        scope: [
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email'
-        ]
-    })
-);
+    passport.authenticate("google", { scope: ['profile', 'email'] }));
 
-app.get('/auth/google/callback',
-    passport.authenticate("google", { session: true }),
-    (req, res) => {
-        res.redirect(`${process.env.FRONTEND_BASE_URL}`);
-    }
-);
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+    res.redirect(process.env.FRONTEND_BASE_URL);
+});
 
 // Route to log out
 app.get('/logout', (req, res, next) => {
     req.logout((err) => {
         if (err) return next(err);
         // Broadcast logout event to other tabs
-        res.status(200).json({ message: 'Logged out successfully!' });
+        res.redirect(process.env.FRONTEND_BASE_URL);
     });
 });
 
@@ -122,7 +107,7 @@ app.get('/user', (req, res) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    res.json(req.user);
+    res.json({ user: req.user });
 });
 
 const server = app.listen(PORT, () => {
