@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,11 +9,13 @@ const Login = () => {
         const fetchUser = async () => {
             setLoading(true);
             try {
-                await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
                     withCredentials: true,
                 });
+                console.log(response.data);
                 navigate('/home');
             } catch (error) {
+                console.log(error);
             } finally {
                 setLoading(false);
             }
