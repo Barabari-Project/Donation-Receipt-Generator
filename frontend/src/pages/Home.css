@@ -1,7 +1,10 @@
-$primary-color: #1976d2;
-$secondary-color: #333;
-$text-color: #fff;
-$dark-text-color: #333;
+:root {
+  --primary-color: #1976d2;
+  --secondary-color: #333;
+  --text-color: #fff;
+  --dark-text-color: #333;
+}
+
 .appContainer {
   display: flex;
   flex-direction: column;
@@ -10,24 +13,24 @@ $dark-text-color: #333;
   background: black;
   overflow: hidden;
   min-height: 100vh;
-  // background-image: linear-gradient(to top, #9890e3 0%, #b1f4cf 100%);
-  // background: url('../img.svg');
-  // relative min-h-screen flex items-center justify-center bg-black overflow-hidden
 }
+
 .appBar {
-  background-color: $secondary-color;
+  background-color: var(--secondary-color);
   display: flex;
   align-items: center;
   padding: 10px 20px;
 }
+
 .logo {
   height: 40px;
   margin-right: 10px;
 }
+
 .title {
   flex-grow: 1;
   text-align: center;
-  color: $text-color;
+  color: var(--text-color);
 }
 
 .formBox {
@@ -41,50 +44,57 @@ $dark-text-color: #333;
   gap: 1rem;
   text-align: center;
 }
+
 .fileInputContainer {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  
-  .fileName {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.8);
 }
-  label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0.5rem;
-    background-color: $primary-color;
-    padding: 10px 1rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    color: $text-color;
-    &:hover {
-      background-color: darken($primary-color, 10%);
-    }
-  }
-  input[type="file"] {
-    display: none;
-  }
-  .fileInputLabel {
-    background-color: $primary-color;
-    color: $text-color;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    &:hover {
-      background-color: darken($primary-color, 10%);
-    }
-  }
+
+.fileName {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
 }
+
+.fileInputContainer label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  background-color: var(--primary-color);
+  padding: 10px 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.fileInputContainer label:hover {
+  background-color: #1565c0;
+}
+
+.fileInputContainer input[type="file"] {
+  display: none;
+}
+
+.fileInputLabel {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.fileInputLabel:hover {
+  background-color: #1565c0;
+}
+
 .submitButton {
-  background-color: $primary-color;
-  color: $text-color;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   padding: 14px 20px;
   border: none;
   width: 100%;
@@ -97,22 +107,26 @@ $dark-text-color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
-  &.loading {
-    background-color: lighten($primary-color, 30%);
-    cursor: not-allowed;
-  }
 }
-.submitButton:hover {
-  background-color: darken($primary-color, 10%);
-}
-.loading:hover {
-  background-color: lighten($primary-color, 30%);
+
+.submitButton.loading {
+  background-color: #64b5f6;
   cursor: not-allowed;
 }
+
+.submitButton:hover {
+  background-color: #1565c0;
+}
+
+.loading:hover {
+  background-color: #64b5f6;
+  cursor: not-allowed;
+}
+
 .footer {
   padding: 20px;
-  background-color: $secondary-color;
-  color: $text-color;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
   text-align: center;
   border-top: 1px solid #ddd;
   display: flex;
@@ -121,10 +135,12 @@ $dark-text-color: #333;
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .footerLink {
   color: yellow;
   margin-left: 5px;
 }
+
 @keyframes background {
   0% {
     background-position: 0% 50%;
@@ -161,7 +177,6 @@ $dark-text-color: #333;
   border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(15px);
   color: white;
-  // padding: 8px;
   border-radius: 12px;
   margin-bottom: 11px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
@@ -174,7 +189,6 @@ $dark-text-color: #333;
   box-shadow: 0 0 20px rgba(106, 0, 244, 0.8);
 }
 
-
 .file-label {
   color: rgba(255, 255, 255, 0.5);
   transition: color 0.3s ease;
@@ -183,4 +197,3 @@ $dark-text-color: #333;
 .file-label:hover {
   color: rgba(255, 255, 255, 0.9);
 }
-

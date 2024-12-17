@@ -1,5 +1,5 @@
 import React, { InputHTMLAttributes } from "react";
-import styles from "./Input.module.scss";
+import "./Input.css";
 import { FaQuestionCircle } from "react-icons/fa";
 
 
@@ -16,17 +16,17 @@ const Input: React.FC<InputProps> = ({ isDisable, label, errorMessage, icon, onC
   };
 
   return (
-    <div className={`${styles.appInputContainer} ${props.type || ""}`}>
+    <div className={`appInputContainer ${props.type || ""}`}>
       {label && <label>{label}</label>}
-      <div className={styles.inputBar}>
+      <div className="inputBar">
         {icon && <span>{icon}</span>}
         {
           !isDisable ?
-            <input {...props} onChange={handleInputChange} className={errorMessage ? styles.error : ""} />
-            : <input {...props} onChange={handleInputChange} className={errorMessage ? styles.error : ""} disabled />
+            <input {...props} onChange={handleInputChange} className={errorMessage ? "error" : ""} />
+            : <input {...props} onChange={handleInputChange} className={errorMessage ? "error" : ""} disabled />
         }
         {props.type == "password" &&
-          <span className={styles.questionMarkIcon}>
+          <span className="questionMarkIcon">
             <a target="_blank" href="https://drive.google.com/drive/u/0/folders/18V0mD94B4yJtA3GNFiS5VFMy3sHoZaTO">
               <FaQuestionCircle />
             </a>
@@ -35,12 +35,12 @@ const Input: React.FC<InputProps> = ({ isDisable, label, errorMessage, icon, onC
       </div>
       {
         props.type === "checkbox" ? (
-          <label className={styles.checkboxLabel}>
-            <span className={`${styles.checkmark} ${props.checked ? styles.visible : ""}`}>✔</span>
+          <label className="checkboxLabel">
+            <span className={`checkmark ${props.checked ? "visible" : ""}`}>✔</span>
           </label>
         ) : null
       }
-      {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
+      {errorMessage && <p className="errorMessage">{errorMessage}</p>}
     </div >
   );
 };
