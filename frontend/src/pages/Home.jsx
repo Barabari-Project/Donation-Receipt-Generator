@@ -129,7 +129,7 @@ const Home = () => {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
                     withCredentials: true,
                 });
-                console.log(response.data.user.emails[0].value);
+               
                 setEmail(response.data.user.emails[0].value);
             } catch (error) {
                 console.log(error);
