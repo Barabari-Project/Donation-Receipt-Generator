@@ -2,17 +2,18 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
+import Cookies from 'js-cookie';
 
 const Hero = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState(null);
   const [logoName, setLogoName] = useState("Barabari Collective");
+  const navigate = useNavigate();
   const handleLogout = () => {
     setLoading(true);
     try {
-      axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`, {
-        withCredentials: true,
-      });
+      Cookies.remove('token');
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
     } finally {
@@ -21,10 +22,13 @@ const Hero = () => {
   }
   useEffect(() => {
     const fetchUser = async () => {
+      const token = Cookies.get('token');
       setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
-          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
         const userEmail = response.data.email;
         setEmail(userEmail);

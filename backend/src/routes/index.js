@@ -25,13 +25,6 @@ router.post('/auth/google', async (req, res) => {
         // Generate JWT token
         const token = jwt.sign({ email, name }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-        // Set token in HTTP-only cookie
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            maxAge: 3600000, // 1 hour
-        });
-
         res.status(200).json({ message: 'Login successful', token, email });
     } catch (error) {
         console.error('Error verifying Google token:', error);
@@ -40,7 +33,7 @@ router.post('/auth/google', async (req, res) => {
 });
 
 router.get('/user', (req, res) => {
-    const token = req.cookies.token;
+    const token = req.headers?.authorization?.split(' ')[1];
 
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -54,18 +47,6 @@ router.get('/user', (req, res) => {
         console.error('Error verifying JWT:', error);
         res.status(401).json({ error: 'Invalid token' });
     }
-});
-
-router.post('/logout', (req, res) => {
-    res.clearCookie(
-        'token',
-        {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 0,
-        }
-    );
-    res.status(200).json({ message: 'Logged out successfully' });
 });
 
 router.post('/', async (req, res, next) => {

@@ -16,39 +16,7 @@ import classNames from "classnames";
 import MultiEmailInput from "../components/MultiEmailInput/MultiEmailInput";
 import encryptData from "../utils/encryptData";
 import { useNavigate } from "react-router-dom";
-// import linkedIn from "./assets/linkedIn.png";
-// import instagram from "./assets/instagram.png"
-
-// type InputState = {
-//     starting: number | "";
-//     ending: number | "";
-//     email: string;
-//     password: string;
-//     ccEmails: string[];
-//     file: File | null;
-//     fileName: string;
-// };
-
-// type ErrorState = {
-//     emailError: string;
-//     passwordError: string;
-//     startingError: string;
-//     endingError: string;
-// };
-
-// type InputAction =
-//     | {
-//         type: "SET_FIELD";
-//         field: keyof Omit<InputState, "ccEmails">;
-//         value: string | number | File | null;
-//     }
-//     | { type: "SET_CC_EMAILS"; value: string[] }
-//     | { type: "SET_FILE"; value: File | null; fileName: string }
-//     | { type: "CLEAR_INPUTS" };
-
-// type ErrorAction =
-//     | { type: "SET_ERROR"; field: keyof ErrorState; value: string }
-//     | { type: "CLEAR_ERRORS" };
+import Cookies from 'js-cookie';
 
 const initialInputState = {
   starting: "",
@@ -124,10 +92,13 @@ const Home = () => {
   useEffect(() => {
     const awakeServer = async () => {
       try {
+        const token = Cookies.get('token');
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_BASE_URL}/user`,
           {
-            withCredentials: true,
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
           }
         );
 
@@ -280,9 +251,9 @@ const Home = () => {
       }
       jsonData.map(
         (data) =>
-          (data["Date of Donation"] = ExcelDateToJSDate(
-            data["Date of Donation"]
-          ))
+        (data["Date of Donation"] = ExcelDateToJSDate(
+          data["Date of Donation"]
+        ))
       );
 
       const encryptedObj = encryptData({

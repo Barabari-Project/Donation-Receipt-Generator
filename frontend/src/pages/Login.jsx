@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from "@react-oauth/google";
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,10 +13,10 @@ const Login = () => {
         try {
             setLoading(true);
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`,
-                { credential: id_token },
-                { withCredentials: true }
+                { credential: id_token }
             );
             console.log('Backend response:', response.data);
+            Cookies.set('token', response.data.token);
             navigate('/home');
         } catch (error) {
             console.error('Error:', error);
@@ -29,10 +30,13 @@ const Login = () => {
     }
     useEffect(() => {
         const fetchUser = async () => {
+            const token = Cookies.get('token');
             setLoading(true);
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
-                    withCredentials: true,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 console.log(response.data);
                 navigate('/home');
