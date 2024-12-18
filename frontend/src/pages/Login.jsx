@@ -12,6 +12,8 @@ const Login = ({ setEmail }) => {
         console.log('ID Token:', id_token);
         try {
             setLoading(true);
+            console.log(id_token);
+            
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`,
                 { credential: id_token }
             );

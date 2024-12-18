@@ -3,14 +3,23 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
 import Cookies from 'js-cookie';
-import { useRef } from 'react';
 
 const Hero = ({ email, setEmail }) => {
   const [loading, setLoading] = useState(false);
-  // const [email, setEmail] = useState(null);
-  const [logoName, setLogoName] = useState('Barabari Collective');
-  const menuToggleRef = useRef(null); // Ref for the hamburger checkbox
-
+  const [logoName, setLogoName] = useState("Barabari Collective");
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    setLoading(true);
+    try {
+      Cookies.remove('token');
+      setEmail(null);
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
   useEffect(() => {
     const fetchUser = async () => {
       const token = Cookies.get('token');
@@ -23,16 +32,8 @@ const Hero = ({ email, setEmail }) => {
         });
         const userEmail = response.data.email;
         setEmail(userEmail);
-
-        if (userEmail === import.meta.env.VITE_SOS_MAIL) {
-          setLogoName('Sos x Barabari Donation Receipt Generator');
-        } else if (userEmail === import.meta.env.VITE_RAKSHA_MAIL) {
-          setLogoName('Raksha x Barabari Donation Receipt Generator');
-        } else {
-          setLogoName('Barabari Collective');
-        }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
       } finally {
         setLoading(false);
       }
@@ -41,16 +42,19 @@ const Hero = ({ email, setEmail }) => {
     fetchUser();
   }, []);
 
-  // Function to close the menu
-  const closeMenu = () => {
-    if (menuToggleRef.current) {
-      menuToggleRef.current.checked = false;
+  useEffect(() => {
+    if (email === import.meta.env.VITE_SOS_MAIL) {
+      setLogoName("Sos x Barabari Donation Receipt Generator");
+    } else if (email === import.meta.env.VITE_RAKSHA_MAIL) {
+      setLogoName("Raksha x Barabari Donation Receipt Generator");
+    } else {
+      setLogoName("Barabari Collective");
     }
-  };
+  }, [email]);
 
   return (
     <header className="z-50 fixed top-0 w-full bg-white">
-      <div className="h-[70px] flex items-center px-2 md:px-3 lg:px-32 xl:px-48 justify-between">
+      <div className="h-[70px]  flex items-center px-8 md:px-12 lg:px-32 xl:px-48 justify-between">
         <div className="flex gap-2 items-center">
           <a href="#">
             <img
@@ -70,7 +74,7 @@ const Hero = ({ email, setEmail }) => {
             </button>
           </a>
           <a href="https://www.barabaricollective.org/services.html" target="_blank">
-            <button className="bg-[#324498] hover:bg-[#ffcc33] text-[#ffcc33] hover:text-[#324498] px-3 py-1 w-[120px] font-semibold focus:outline-none  transition-colors duration-300">
+            <button className="bg-[#324498] hover:bg-[#ffcc33] text-[#ffcc33] hover:text-[#324498] px-3 py-1 font-semibold focus:outline-none  transition-colors duration-300">
               Hire From Us
             </button>
           </a>
@@ -83,12 +87,7 @@ const Hero = ({ email, setEmail }) => {
           )}
         </div>
         <div id="hamburger" className="block md:hidden animate__zoomInDown">
-          <input
-            id="menu-toggle"
-            className="hidden peer"
-            type="checkbox"
-            ref={menuToggleRef} // Bind the ref
-          />
+          <input id="menu-toggle" className="hidden peer" type="checkbox" />
           <label htmlFor="menu-toggle">
             <div className="w-12 h-12 cursor-pointer flex flex-col items-center justify-center">
               <div className="w-[50%] h-[3px] bg-black rounded-sm transition-all duration-300 origin-left translate-y-[0.6rem] peer-checked:rotate-[-45deg]"></div>
@@ -104,37 +103,38 @@ const Hero = ({ email, setEmail }) => {
                 target="_blank"
                 className="flex items-center justify-center bg-[#324498] hover:bg-[#324498] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
                 rel="noopener noreferrer"
-                onClick={closeMenu} // Close menu on click
               >
                 <span className="material-icons mr-2">volunteer_activism</span>
                 Donate
               </a>
               <a
-                href="https://www.barabaricollective.org/services.html"
+                href="services.html"
                 target="_blank"
                 className="flex items-center justify-center bg-[#f39c12] hover:bg-[#e67e22] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
                 rel="noopener noreferrer"
-                onClick={closeMenu} 
               >
                 <span className="material-icons mr-2">work</span>
                 Hire From Us
               </a>
               {email && (
-                <a
-                  href={`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`}
+                <button
+                  onClick={handleLogout}
                   className="flex items-center justify-center bg-[#e74c3c] hover:bg-[#c0392b] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
-                  onClick={closeMenu} 
                 >
                   <span className="material-icons mr-2">logout</span>
                   Logout
-                </a>
+                </button>
               )}
             </div>
           </div>
+
+
+
         </div>
+
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero
