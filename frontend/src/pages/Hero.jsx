@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
 import Cookies from 'js-cookie';
+import { useRef } from 'react';
 
 const Hero = ({ email, setEmail }) => {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState(null);
+  // const [email, setEmail] = useState(null);
   const [logoName, setLogoName] = useState('Barabari Collective');
   const menuToggleRef = useRef(null); // Ref for the hamburger checkbox
 
