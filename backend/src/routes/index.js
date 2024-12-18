@@ -37,7 +37,7 @@ const authMiddleware = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
-    console.log(token)
+   
     try {
         const { email } = jwt.verify(token, process.env.JWT_SECRET);
         req.user = { email };
