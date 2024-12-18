@@ -1,42 +1,41 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from './pages/Home';
 
 import axios from 'axios';
 import Hero from './pages/Hero';
 import Footer from './pages/Footer';
 import Login from './pages/Login';
+import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-
+  const [email, setEmail] = useState(null);
   useEffect(() => {
     const awakeServer = async () => {
       try {
-        await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/health`, {
-          withCredentials: true,
-        });
+        await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/health`);
       } catch (error) {
       }
     };
     awakeServer();
   }, []);
 
-  const Layout = () => (
-    <>
-      <Hero />
-      <main>
-        <Outlet /> {/* Outlet will render the appropriate route content */}
-      </main>
-      <Footer />
-    </>
-  );
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={<Home />} />
+        <Route element={<Layout email={email} setEmail={setEmail} />}>
+          <Route path="/" element={
+            <ProtectedRoute email={!email} redirect='/home'>
+              <Login email={email} setEmail={setEmail} />
+            </ProtectedRoute>}
+          />
+          <Route path="/home" element={
+            <ProtectedRoute email={email} redirect='/'>
+              <Home email={email} setEmail={setEmail} />
+            </ProtectedRoute>}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

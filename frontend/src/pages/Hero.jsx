@@ -1,8 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useState, useRef } from 'react';
-import logo from '../assets/barabari_logo.png';
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/barabari_logo.png'
+import Cookies from 'js-cookie';
 
-const Hero = () => {
+const Hero = ({ email, setEmail }) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState(null);
   const [logoName, setLogoName] = useState('Barabari Collective');
@@ -10,12 +12,15 @@ const Hero = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = Cookies.get('token');
       setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
-          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
-        const userEmail = response.data.user.emails[0].value;
+        const userEmail = response.data.email;
         setEmail(userEmail);
 
         if (userEmail === import.meta.env.VITE_SOS_MAIL) {

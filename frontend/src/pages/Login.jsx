@@ -1,16 +1,43 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from "@react-oauth/google";
+import Cookies from 'js-cookie';
 
-const Login = () => {
+const Login = ({ setEmail }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const handleGoogleLoginSuccess = async (credentialResponse) => {
+        const id_token = credentialResponse.credential; // The `id_token`
+        console.log('ID Token:', id_token);
+        try {
+            setLoading(true);
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`,
+                { credential: id_token }
+            );
+            console.log('Backend response:', response.data);
+            Cookies.set('token', response.data.token);
+            setEmail(response.data.email);
+            navigate('/home');
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            setLoading(false);
+        }
+
+    }
+    const handleGoogleLoginError = () => {
+        console.log('Login Failed');
+    }
     useEffect(() => {
         const fetchUser = async () => {
+            const token = Cookies.get('token');
             setLoading(true);
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
-                    withCredentials: true,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 console.log(response.data);
                 navigate('/home');
@@ -45,9 +72,10 @@ const Login = () => {
                 <h1 className="text-4xl font-bold text-white mb-4 text-center">Receipts Fast, Impact Faster!
                 </h1>
                 <p className="text-gray-300 mb-6 text-center">Log in to explore endless possibilities.</p>
-                <a href={import.meta.env.VITE_BACKEND_BASE_URL + '/auth/google'}>
-                    <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-yellow-400 text-white font-semibold rounded-lg shadow-lg transition-transform transform hover:scale-105">Login with Google</button>
-                </a>
+                <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginError}
+                />
                 <p className="mt-4 text-center text-gray-400">
                     Found the tool you need? <a href="https://www.barabaricollective.org/services.html" target='_blank' className="text-yellow-400 hover:underline">Click here</a>
                 </p>

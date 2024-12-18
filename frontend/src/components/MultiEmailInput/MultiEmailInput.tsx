@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./MultiEmailInput.module.scss";
+import "./MultiEmailInput.css";
 // import { toast } from "react-toastify";
 
 type MultiEmailInputProps = {
@@ -51,10 +51,10 @@ const MultiEmailInput: React.FC<MultiEmailInputProps> = ({ ccEmails, onEmailsCha
   };
 
   return (
-    <div className={styles.multiEmailInputContainer}>
-      <div className={styles.emailsContainer}>
+    <div className="multiEmailInputContainer">
+      <div className="emailsContainer">
         {ccEmails.map((email, index) => (
-          <div key={index} className={styles.emailTag}>
+          <div key={index} className="emailTag">
             {email}
             <button type="button" onClick={() => removeEmail(index)}>
               &times;
@@ -70,7 +70,7 @@ const MultiEmailInput: React.FC<MultiEmailInputProps> = ({ ccEmails, onEmailsCha
           placeholder="Add CC email"
         />
       </div>
-      {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
+      {errorMessage && <p className="errorMessage">{errorMessage}</p>}
     </div>
   );
 };
