@@ -73,7 +73,7 @@ const errorReducer = (state, action) => {
   }
 };
 
-const Home = () => {
+const Home = ({ email, setEmail }) => {
   const navigate = useNavigate();
 
   const [inputState, dispatchInput] = useReducer(
@@ -87,32 +87,31 @@ const Home = () => {
   );
 
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState(null);
 
-  useEffect(() => {
-    const awakeServer = async () => {
-      try {
-        const token = Cookies.get('token');
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_BASE_URL}/user`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
+  // useEffect(() => {
+  //   const awakeServer = async () => {
+  //     try {
+  //       const token = Cookies.get('token');
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_BASE_URL}/user`,
+  //         {
+  //           headers: {
+  //             'Authorization': `Bearer ${token}`
+  //           }
+  //         }
+  //       );
 
-        setEmail(response.data.email);
-      } catch (error) {
-        console.log(error);
-        if (401 == error.response.status) {
-          navigate("/");
-        }
-        toast.error("Internal Server Error | please contact to developers");
-      }
-    };
-    awakeServer();
-  }, []);
+  //       setEmail(response.data.email);
+  //     } catch (error) {
+  //       console.log(error);
+  //       if (401 == error.response.status) {
+  //         navigate("/");
+  //       }
+  //       toast.error("Internal Server Error | please contact to developers");
+  //     }
+  //   };
+  //   awakeServer();
+  // }, []);
 
   const handleInputBlur = (fieldName) => {
     validateInput(fieldName);
@@ -265,12 +264,14 @@ const Home = () => {
       });
 
       // Making the Axios call
-
+      const token = Cookies.get('token');
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_BASE_URL}`,
         { encryptedData: encryptedObj },
         {
-          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`, // Add the Bearer token here
+          },
         }
       );
 

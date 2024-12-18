@@ -4,15 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/barabari_logo.png'
 import Cookies from 'js-cookie';
 
-const Hero = () => {
+const Hero = ({ email, setEmail }) => {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState(null);
   const [logoName, setLogoName] = useState("Barabari Collective");
   const navigate = useNavigate();
   const handleLogout = () => {
     setLoading(true);
     try {
       Cookies.remove('token');
+      setEmail(null);
       navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -32,15 +32,6 @@ const Hero = () => {
         });
         const userEmail = response.data.email;
         setEmail(userEmail);
-
-        // Directly check the userEmail value
-        if (userEmail === import.meta.env.VITE_SOS_MAIL) {
-          setLogoName("Sos x Barabari Donation Receipt Generator");
-        } else if (userEmail === import.meta.env.VITE_RAKSHA_MAIL) {
-          setLogoName("Raksha x Barabari Donation Receipt Generator");
-        } else {
-          setLogoName("Barabari Collective");
-        }
       } catch (error) {
         console.error("Error fetching user:", error);
       } finally {
@@ -50,6 +41,16 @@ const Hero = () => {
 
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (email === import.meta.env.VITE_SOS_MAIL) {
+      setLogoName("Sos x Barabari Donation Receipt Generator");
+    } else if (email === import.meta.env.VITE_RAKSHA_MAIL) {
+      setLogoName("Raksha x Barabari Donation Receipt Generator");
+    } else {
+      setLogoName("Barabari Collective");
+    }
+  }, [email]);
 
   return (
     <header className="z-50 fixed top-0 w-full bg-white">

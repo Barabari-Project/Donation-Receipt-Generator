@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from "@react-oauth/google";
 import Cookies from 'js-cookie';
 
-const Login = () => {
+const Login = ({ setEmail }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const handleGoogleLoginSuccess = async (credentialResponse) => {
@@ -17,6 +17,7 @@ const Login = () => {
             );
             console.log('Backend response:', response.data);
             Cookies.set('token', response.data.token);
+            setEmail(response.data.email);
             navigate('/home');
         } catch (error) {
             console.error('Error:', error);

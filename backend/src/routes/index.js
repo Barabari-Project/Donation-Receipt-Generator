@@ -31,35 +31,34 @@ router.post('/auth/google', async (req, res) => {
         res.status(401).json({ error: 'Invalid token' });
     }
 });
-
-router.get('/user', (req, res) => {
+const authMiddleware = (req, res, next) => {
     const token = req.headers?.authorization?.split(' ')[1];
-
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
-
     try {
-        // Verify JWT token
         const { email } = jwt.verify(token, process.env.JWT_SECRET);
-        res.status(200).json({ email });
+        req.user = { email };
+        next();
     } catch (error) {
-        console.error('Error verifying JWT:', error);
+        console.error('Error verifying JWT:', error.message);
         res.status(401).json({ error: 'Invalid token' });
     }
+}
+router.get('/user', authMiddleware, (req, res) => {
+    const { email } = req.user;
+    res.status(200).json({ email });
 });
 
-router.post('/', async (req, res, next) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
+router.post('/', authMiddleware, async (req, res, next) => {
+
     const encryptedData = req.body.encryptedData;
     const {
         startingRowNo,
         fileData,
         ccEmails,
         password } = decryptData(encryptedData);
-    const email = req.user?.emails?.[0]?.value;
+    const email = req.user.email;
     if (!email) {
         return res.status(400).json({ error: 'User email not found' });
     }
