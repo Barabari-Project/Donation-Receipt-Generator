@@ -4,6 +4,7 @@ import { readDataAndSendMailForRaksha, readDataAndSendMailForSOS } from "../util
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
+
 const router = Router();
 
 router.post('/auth/google', async (req, res) => {
