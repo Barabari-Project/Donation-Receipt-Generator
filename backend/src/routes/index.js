@@ -4,6 +4,7 @@ import { readDataAndSendMailForRaksha, readDataAndSendMailForSOS } from "../util
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
+
 const router = Router();
 
 router.post('/auth/google', async (req, res) => {
@@ -16,14 +17,14 @@ router.post('/auth/google', async (req, res) => {
     try {
         // Verify Google token with Google API
         const googleResponse = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
-        const { email, name, picture } = googleResponse.data;
-
-        if (!email || !name || !picture) {
+        const { email } = googleResponse.data;
+ 
+        if (!email  ) {
             return res.status(400).json({ error: 'Invalid token data' });
         }
-
+      
         // Generate JWT token
-        const token = jwt.sign({ email, name }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.status(200).json({ message: 'Login successful', token, email });
     } catch (error) {
@@ -36,12 +37,14 @@ const authMiddleware = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
+   
     try {
         const { email } = jwt.verify(token, process.env.JWT_SECRET);
         req.user = { email };
         next();
     } catch (error) {
         console.error('Error verifying JWT:', error.message);
+
         res.status(401).json({ error: 'Invalid token' });
     }
 }
