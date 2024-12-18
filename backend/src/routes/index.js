@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, Router } from "express";
+import { Router } from "express";
 import decryptData from "../utils/decryptData.js";
 import { readDataAndSendMailForRaksha, readDataAndSendMailForSOS } from "../utils/readDataAndSendMail.js";
 import axios from 'axios';
@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 const router = Router();
 
-router.post('/auth/google', async (req: Request, res: Response) => {
+router.post('/auth/google', async (req, res) => {
     const { credential } = req.body;
 
     if (!credential) {
@@ -39,7 +39,7 @@ router.post('/auth/google', async (req: Request, res: Response) => {
     }
 });
 
-router.get('/user', (req: Request, res: Response) => {
+router.get('/user', (req, res) => {
     const token = req.cookies.token;
 
     if (!token) {
@@ -48,7 +48,7 @@ router.get('/user', (req: Request, res: Response) => {
 
     try {
         // Verify JWT token
-        const { email } = jwt.verify(token, process.env.JWT_SECRET) as { email: string; name: string };
+        const { email } = jwt.verify(token, process.env.JWT_SECRET);
         res.status(200).json({ email });
     } catch (error) {
         console.error('Error verifying JWT:', error);
@@ -56,7 +56,7 @@ router.get('/user', (req: Request, res: Response) => {
     }
 });
 
-router.post('/logout', (req: Request, res: Response) => {
+router.post('/logout', (req, res) => {
     res.clearCookie(
         'token',
         {
@@ -68,7 +68,7 @@ router.post('/logout', (req: Request, res: Response) => {
     res.status(200).json({ message: 'Logged out successfully' });
 });
 
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized' });
     }

@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import winston from "winston";
@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
-const PORT: number = parseInt(process.env.PORT || '3000');
+const PORT = parseInt(process.env.PORT || '3000');
 
 app.use(
     cors({
@@ -37,13 +37,13 @@ export const logger = winston.createLogger({
     ],
 });
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req, res, next) => {
     // Log an info message for each incoming request
     logger.info(`Received a ${req.method} request for ${req.url}`);
     next();
 });
 
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (req, res) => {
     res.sendStatus(200);
 });
 
@@ -53,7 +53,7 @@ const server = app.listen(PORT, () => {
     logger.info(`Server listening at http://localhost:${PORT}`);
 });
 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err, req, res, next) => {
     logger.error(err);
     logger.error(err.message);
     res.redirect(`${process.env.FRONTEND_BASE_URL}`);
