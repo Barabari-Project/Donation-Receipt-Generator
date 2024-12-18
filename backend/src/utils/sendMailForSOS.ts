@@ -1,5 +1,4 @@
 import { createTransport } from "nodemailer";
-// import { RowData } from "./interfaces.js";
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
