@@ -7,6 +7,18 @@ const Hero = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState(null);
   const [logoName, setLogoName] = useState("Barabari Collective");
+  const handleLogout = () => {
+    setLoading(true);
+    try {
+      axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.error('Error logging out:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
@@ -14,9 +26,9 @@ const Hero = () => {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
           withCredentials: true,
         });
-        const userEmail = response.data.user.emails[0].value;
+        const userEmail = response.data.email;
         setEmail(userEmail);
-    
+
         // Directly check the userEmail value
         if (userEmail === import.meta.env.VITE_SOS_MAIL) {
           setLogoName("Sos x Barabari Donation Receipt Generator");
@@ -31,7 +43,7 @@ const Hero = () => {
         setLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
 
@@ -47,7 +59,7 @@ const Hero = () => {
             />
           </a>
           <span className="font-bold hidden sm:block text-2xl drop-shadow-lg tracking-wider text-black">
-           {logoName}
+            {logoName}
           </span>
         </div>
         <div className="hidden md:flex gap-2">
@@ -70,50 +82,50 @@ const Hero = () => {
           )}
         </div>
         <div id="hamburger" className="block md:hidden animate__zoomInDown">
-  <input id="menu-toggle" className="hidden peer" type="checkbox" />
-  <label htmlFor="menu-toggle">
-    <div className="w-12 h-12 cursor-pointer flex flex-col items-center justify-center">
-      <div className="w-[50%] h-[3px] bg-black rounded-sm transition-all duration-300 origin-left translate-y-[0.6rem] peer-checked:rotate-[-45deg]"></div>
-      <div className="w-[50%] h-[3px] bg-black rounded-md transition-all duration-300 origin-center peer-checked:hidden"></div>
-      <div className="w-[50%] h-[3px] bg-black rounded-md transition-all duration-300 origin-left -translate-y-[0.6rem] peer-checked:rotate-[45deg]"></div>
-    </div>
-  </label>
+          <input id="menu-toggle" className="hidden peer" type="checkbox" />
+          <label htmlFor="menu-toggle">
+            <div className="w-12 h-12 cursor-pointer flex flex-col items-center justify-center">
+              <div className="w-[50%] h-[3px] bg-black rounded-sm transition-all duration-300 origin-left translate-y-[0.6rem] peer-checked:rotate-[-45deg]"></div>
+              <div className="w-[50%] h-[3px] bg-black rounded-md transition-all duration-300 origin-center peer-checked:hidden"></div>
+              <div className="w-[50%] h-[3px] bg-black rounded-md transition-all duration-300 origin-left -translate-y-[0.6rem] peer-checked:rotate-[45deg]"></div>
+            </div>
+          </label>
 
-  <div className="fixed top-[70px] right-0 w-64 h-auto bg-white shadow-lg transform translate-x-full peer-checked:translate-x-[-10px] peer-checked:top-[80px] peer-checked:right-[0px] transition-transform duration-400 ease-in-out rounded-lg z-50">
-  <div className="flex flex-col items-center justify-around h-full py-6 space-y-6">
-    <a
-      href="https://forms.gle/WcF55jH3LvK93GTs9"
-      target="_blank"
-      className="flex items-center justify-center bg-[#324498] hover:bg-[#324498] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
-      rel="noopener noreferrer"
-    >
-      <span className="material-icons mr-2">volunteer_activism</span>
-      Donate
-    </a>
-    <a
-      href="services.html"
-      target="_blank"
-      className="flex items-center justify-center bg-[#f39c12] hover:bg-[#e67e22] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
-      rel="noopener noreferrer"
-    >
-      <span className="material-icons mr-2">work</span>
-      Hire From Us
-    </a>
-    {email && (
-      <a
-        href={`${import.meta.env.VITE_BACKEND_BASE_URL}/logout`}
-        className="flex items-center justify-center bg-[#e74c3c] hover:bg-[#c0392b] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
-      >
-        <span className="material-icons mr-2">logout</span>
-        Logout
-      </a>
-    )}
-  </div>
-</div>
+          <div className="fixed top-[70px] right-0 w-64 h-auto bg-white shadow-lg transform translate-x-full peer-checked:translate-x-[-10px] peer-checked:top-[80px] peer-checked:right-[0px] transition-transform duration-400 ease-in-out rounded-lg z-50">
+            <div className="flex flex-col items-center justify-around h-full py-6 space-y-6">
+              <a
+                href="https://forms.gle/WcF55jH3LvK93GTs9"
+                target="_blank"
+                className="flex items-center justify-center bg-[#324498] hover:bg-[#324498] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
+                rel="noopener noreferrer"
+              >
+                <span className="material-icons mr-2">volunteer_activism</span>
+                Donate
+              </a>
+              <a
+                href="services.html"
+                target="_blank"
+                className="flex items-center justify-center bg-[#f39c12] hover:bg-[#e67e22] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
+                rel="noopener noreferrer"
+              >
+                <span className="material-icons mr-2">work</span>
+                Hire From Us
+              </a>
+              {email && (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center bg-[#e74c3c] hover:bg-[#c0392b] text-white font-semibold py-1 px-4 rounded-lg shadow-md transition-transform duration-300 transform hover:scale-105"
+                >
+                  <span className="material-icons mr-2">logout</span>
+                  Logout
+                </button>
+              )}
+            </div>
+          </div>
 
 
 
-</div>
+        </div>
 
       </div>
     </header>

@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import winston from "winston";
 import routes from './routes/index.js';
-import session from 'express-session';
-import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -14,49 +12,14 @@ const PORT: number = parseInt(process.env.PORT || '3000');
 
 app.use(
     cors({
-        credentials: true,
-        origin: process.env.FRONTEND_BASE_URL
+        origin: process.env.FRONTEND_BASE_URL,
+        credentials: true, // Allow cookies
     })
 );
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Secure in production (HTTPS)
-        httpOnly: true, // Prevents JavaScript access
-        sameSite: 'none', // Required for cross-site cookies
-    },
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Configure Passport with Google OAuth strategy
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.BACKEND_BASE_URL + '/auth/google/callback'
-}, (accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
-    // const userData = profile._json;
-    // if (process.env.SOS_EMAIL == userData.email || process.env.RAKSHA_EMAIL == userData.email) {
-    //     return done(null, profile);
-    // }
-    // done(new Error('Invalid Authentication'), false);
-}));
-
-passport.serializeUser((user, done) => {
-    done(null, user);
-});
-
-passport.deserializeUser((obj, done) => {
-    done(null, obj);
-});
 
 export const logger = winston.createLogger({
     // Log only if level is less than (meaning more severe) or equal to this
@@ -71,7 +34,6 @@ export const logger = winston.createLogger({
     // Log to the console and a file
     transports: [
         new winston.transports.Console(),
-        new winston.transports.File({ filename: "logs/app.log" }),
     ],
 });
 
@@ -82,40 +44,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get('/health', (req: Request, res: Response) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
     res.sendStatus(200);
 });
 
 app.use(routes);
-
-// Routes for Google authentication
-app.get("/auth/google",
-    passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account" }));
-
-app.get('/login', passport.authenticate("google", { scope: ['profile', 'email'], prompt: "select_account" }));
-
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect(process.env.FRONTEND_BASE_URL + '/home');
-});
-
-// Route to log out
-app.get('/logout', (req, res, next) => {
-    req.logout((err) => {
-        if (err) return next(err);
-        // Broadcast logout event to other tabs
-        res.redirect(process.env.FRONTEND_BASE_URL);
-    });
-});
-
-// Route to get user profile
-app.get('/user', (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-    res.json({ user: req.user });
-});
 
 const server = app.listen(PORT, () => {
     logger.info(`Server listening at http://localhost:${PORT}`);

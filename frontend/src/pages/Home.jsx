@@ -131,7 +131,7 @@ const Home = () => {
           }
         );
 
-        setEmail(response.data.user.emails[0].value);
+        setEmail(response.data.email);
       } catch (error) {
         console.log(error);
         if (401 == error.response.status) {
