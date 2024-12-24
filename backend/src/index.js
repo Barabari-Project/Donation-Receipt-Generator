@@ -10,16 +10,22 @@ dotenv.config();
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000');
 
-app.use(
-    cors({
-        origin: process.env.FRONTEND_BASE_URL,
-        credentials: true, // Allow cookies
-    })
-);
+var allowlist = [process.env.FRONTEND_BASE_URL1, process.env.FRONTEND_BASE_URL2]
+
+var corsOptionsDelegate = function (req, callback) {
+    var corsOptions;
+    if (allowlist.indexOf(req.header('Origin')) !== -1) {
+        corsOptions = { origin: true }
+    } else {
+        corsOptions = { origin: false }
+    }
+    callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+app.use(cors(corsOptionsDelegate));
 
 app.use(express.json());
 app.use(cookieParser());
-
 
 export const logger = winston.createLogger({
     // Log only if level is less than (meaning more severe) or equal to this
