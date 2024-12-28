@@ -9,14 +9,14 @@ const Login = ({ setEmail }) => {
     const [loading, setLoading] = useState(false);
     const handleGoogleLoginSuccess = async (credentialResponse) => {
         const id_token = credentialResponse.credential; // The `id_token`
-      
+
         try {
             setLoading(true);
-            
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/auth/google`,
+
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/auth/google`,
                 { credential: id_token }
             );
-            
+
             Cookies.set('token', response.data.token);
             setEmail(response.data.email);
             navigate('/home');
@@ -35,12 +35,12 @@ const Login = ({ setEmail }) => {
             const token = Cookies.get('token');
             setLoading(true);
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/user`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-               
+
                 navigate('/home');
             } catch (error) {
                 console.log(error);

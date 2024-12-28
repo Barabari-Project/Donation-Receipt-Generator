@@ -40,6 +40,7 @@ export function validateRowForRaksha(row, rowNumber) {
         !row['Check/CC/Reference Number'] ||
         !row['This donation has gone towards']
     ) {
+        console.log(row);
         throw new Error(
             'Server Stopped sending mail from Row No :- ' + rowNumber + '\n Reason :- Some fields are empty in Row No :- ' + rowNumber
         );

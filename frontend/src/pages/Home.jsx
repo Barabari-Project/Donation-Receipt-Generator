@@ -88,31 +88,6 @@ const Home = ({ email, setEmail }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // useEffect(() => {
-  //   const awakeServer = async () => {
-  //     try {
-  //       const token = Cookies.get('token');
-  //       const response = await axios.get(
-  //         `${import.meta.env.VITE_BACKEND_BASE_URL}/user`,
-  //         {
-  //           headers: {
-  //             'Authorization': `Bearer ${token}`
-  //           }
-  //         }
-  //       );
-
-  //       setEmail(response.data.email);
-  //     } catch (error) {
-  //       console.log(error);
-  //       if (401 == error.response.status) {
-  //         navigate("/");
-  //       }
-  //       toast.error("Internal Server Error | please contact to developers");
-  //     }
-  //   };
-  //   awakeServer();
-  // }, []);
-
   const handleInputBlur = (fieldName) => {
     validateInput(fieldName);
   };
@@ -227,6 +202,7 @@ const Home = ({ email, setEmail }) => {
         const day = dateParts[1];
         let month = dateParts[0];
         const year = dateParts[2];
+        console.log(day, month, year);
         // Convert month name to number
         const monthNumber = (
           "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(month) / 3 +
@@ -266,7 +242,7 @@ const Home = ({ email, setEmail }) => {
       // Making the Axios call
       const token = Cookies.get('token');
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_BASE_URL}`,
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/submit`,
         { encryptedData: encryptedObj },
         {
           headers: {
@@ -287,6 +263,7 @@ const Home = ({ email, setEmail }) => {
       }
       dispatchInput({ type: "CLEAR_INPUTS" });
     } catch (error) {
+      console.log(error);
       if (axios.isAxiosError(error)) {
         // Specific handling for Axios errors
         if (error.response && error.response.data) {
@@ -379,12 +356,15 @@ const Home = ({ email, setEmail }) => {
         password: inputState.password,
         fileData: selectedRows, // Include the Excel data in the payload
       });
-
+      const token = Cookies.get('token');
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_BASE_URL}`,
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/submit`,
         { encryptedData: encryptedObj },
         {
           withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
         }
       );
       // // Handle success
@@ -399,6 +379,7 @@ const Home = ({ email, setEmail }) => {
       }
       dispatchInput({ type: "CLEAR_INPUTS" });
     } catch (error) {
+      console.log(error);
       if (axios.isAxiosError(error)) {
         // Specific handling for Axios errors
         if (error.response && error.response.data) {

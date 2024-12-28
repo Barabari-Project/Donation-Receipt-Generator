@@ -53,8 +53,8 @@ router.get('/user', authMiddleware, (req, res) => {
     res.status(200).json({ email });
 });
 
-router.post('/', authMiddleware, async (req, res, next) => {
-
+router.post('/submit', authMiddleware, async (req, res, next) => {
+    // res.sendStatus(200);
     const encryptedData = req.body.encryptedData;
     const {
         startingRowNo,

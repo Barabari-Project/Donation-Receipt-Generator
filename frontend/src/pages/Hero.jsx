@@ -29,7 +29,7 @@ const Hero = ({ email, setEmail }) => {
       const token = Cookies.get('token');
       setLoading(true);
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/user`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/user`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
