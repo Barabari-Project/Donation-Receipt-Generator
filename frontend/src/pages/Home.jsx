@@ -360,7 +360,6 @@ const Home = ({ email, setEmail }) => {
         `${import.meta.env.VITE_BACKEND_BASE_URL}/api/submit`,
         { encryptedData: encryptedObj },
         {
-          withCredentials: true,
           headers: {
             'Authorization': `Bearer ${token}`,
           },
