@@ -4,8 +4,15 @@ import cors from 'cors';
 import winston from "winston";
 import routes from './routes/index.js';
 import cookieParser from 'cookie-parser';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-dotenv.config();
+// Get the filename of the current module
+const __filename = fileURLToPath(import.meta.url);
+// Get the directory name of the current module
+const __dirname = path.dirname(__filename);
+
+dotenv.config({path: path.resolve(__dirname, '../.env')});
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000');
