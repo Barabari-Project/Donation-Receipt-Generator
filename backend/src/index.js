@@ -26,9 +26,9 @@ const corsOptionsDelegate = (req, callback) => {
 };
 
 // Apply CORS middleware
-// app.use(cors(corsOptionsDelegate));
+app.use(cors(corsOptionsDelegate));
 
-app.use(cors({ origin: '*' }));
+// app.use(cors({ origin: '*' }));
 
 // Middleware for JSON and cookies
 app.use(express.json());
