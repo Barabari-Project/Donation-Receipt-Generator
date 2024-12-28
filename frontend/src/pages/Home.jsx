@@ -202,7 +202,6 @@ const Home = ({ email, setEmail }) => {
         const day = dateParts[1];
         let month = dateParts[0];
         const year = dateParts[2];
-        console.log(day, month, year);
         // Convert month name to number
         const monthNumber = (
           "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(month) / 3 +
