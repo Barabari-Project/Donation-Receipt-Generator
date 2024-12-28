@@ -63,6 +63,7 @@ app.use((req, res, next) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+    console.log(path.resolve(__dirname, '../.env'));
     console.log(process.env.FRONTEND_BASE_URL1);
     res.sendStatus(200);
 });
