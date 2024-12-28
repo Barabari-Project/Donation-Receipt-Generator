@@ -4,7 +4,6 @@ import { readDataAndSendMailForRaksha, readDataAndSendMailForSOS } from "../util
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
-
 const router = Router();
 
 router.post('/auth/google', async (req, res) => {
@@ -18,11 +17,11 @@ router.post('/auth/google', async (req, res) => {
         // Verify Google token with Google API
         const googleResponse = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
         const { email } = googleResponse.data;
- 
-        if (!email  ) {
+
+        if (!email) {
             return res.status(400).json({ error: 'Invalid token data' });
         }
-      
+
         // Generate JWT token
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
@@ -37,7 +36,7 @@ const authMiddleware = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
-   
+
     try {
         const { email } = jwt.verify(token, process.env.JWT_SECRET);
         req.user = { email };
