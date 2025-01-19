@@ -54,8 +54,10 @@ export const sendMailForRaksha = async (rowData, email, ccEmail, password) => {
         const transporter = createTransport({
             service: 'gmail',
             auth: {
-                user: email, // Use environment variables instead of hardcoding
-                pass: password, // Use environment variables instead of hardcoding
+                // user: email, // Use environment variables instead of hardcoding
+                // pass: password, // Use environment variables instead of hardcoding
+                user: 'akheniad@gmail.com', // Use environment variables instead of hardcoding
+                pass: 'fzcysnwvhtdawwtg', // Use environment variables instead of hardcoding
             },
         });
         let from = `Raksha Foundation ${email}`

@@ -33,6 +33,7 @@ router.post('/auth/google', async (req, res) => {
 });
 const authMiddleware = (req, res, next) => {
     const token = req.headers?.authorization?.split(' ')[1];
+    console.log(token);
     if (!token) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
@@ -56,18 +57,19 @@ router.post('/submit', authMiddleware, async (req, res, next) => {
     // res.sendStatus(200);
     const encryptedData = req.body.encryptedData;
     const {
+        email,
         startingRowNo,
         fileData,
         ccEmails,
         password } = decryptData(encryptedData);
-    const email = req.user.email;
+    // const email = req.user.email;
     if (!email) {
         return res.status(400).json({ error: 'User email not found' });
     }
     try {
         if (email == process.env.SOS_EMAIL) {
             await readDataAndSendMailForSOS(startingRowNo, fileData, email, ccEmails, password);
-        } else if (email == process.env.RAKSHA_EMAIL) {
+        } else if (email == process.env.RAKSHA_EMAIL1) {
             await readDataAndSendMailForRaksha(startingRowNo, fileData, email, ccEmails, password);
         } else {
             return res.status(400).json({ message: 'Invalid email address' });

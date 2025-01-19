@@ -16,7 +16,6 @@ const Login = ({ setEmail }) => {
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/auth/google`,
                 { credential: id_token }
             );
-
             Cookies.set('token', response.data.token);
             setEmail(response.data.email);
             navigate('/home');

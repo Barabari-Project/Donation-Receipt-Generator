@@ -49,7 +49,10 @@ const Hero = ({ email, setEmail }) => {
   useEffect(() => {
     if (email === import.meta.env.VITE_SOS_MAIL) {
       setLogoName("Sos x Barabari Donation Receipt Generator");
-    } else if (email === import.meta.env.VITE_RAKSHA_MAIL) {
+    } else if (import.meta.env.VITE_RAKSHA_EMAIL1 == email ||
+      import.meta.env.VITE_RAKSHA_EMAIL2 == email ||
+      import.meta.env.VITE_RAKSHA_EMAIL3 == email ||
+      import.meta.env.VITE_RAKSHA_EMAIL4 == email) {
       setLogoName("Raksha x Barabari Donation Receipt Generator");
     } else {
       setLogoName("Barabari Collective");

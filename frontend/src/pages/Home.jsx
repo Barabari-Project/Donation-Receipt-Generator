@@ -73,8 +73,7 @@ const errorReducer = (state, action) => {
   }
 };
 
-const Home = ({ email, setEmail }) => {
-  const navigate = useNavigate();
+const Home = ({ setEmail }) => {
 
   const [inputState, dispatchInput] = useReducer(
     inputReducer,
@@ -231,6 +230,7 @@ const Home = ({ email, setEmail }) => {
       );
 
       const encryptedObj = encryptData({
+        email: inputState.email,
         startingRowNo: starting,
         endingRowNo: ending,
         ccEmails: inputState.ccEmails,
@@ -349,6 +349,7 @@ const Home = ({ email, setEmail }) => {
         return;
       }
       const encryptedObj = encryptData({
+        email: inputState.email,
         startingRowNo: starting,
         endingRowNo: ending,
         ccEmails: inputState.ccEmails,
@@ -396,9 +397,12 @@ const Home = ({ email, setEmail }) => {
   };
 
   const handleSubmit = async () => {
-    if (import.meta.env.VITE_SOS_MAIL == email) {
+    if (import.meta.env.VITE_SOS_MAIL == inputState.email) {
       handleSubmitForSOS();
-    } else if (import.meta.env.VITE_RAKSHA_MAIL == email) {
+    } else if (import.meta.env.VITE_RAKSHA_EMAIL1 == inputState.email ||
+      import.meta.env.VITE_RAKSHA_EMAIL2 == inputState.email ||
+      import.meta.env.VITE_RAKSHA_EMAIL3 == inputState.email ||
+      import.meta.env.VITE_RAKSHA_EMAIL4 == inputState.email) {
       handleSubmitForRaksha();
     } else {
       toast.error("Invalid User");
@@ -428,12 +432,12 @@ const Home = ({ email, setEmail }) => {
       >
         <div className="formBox">
           <Input
-            isDisable={true}
+            // isDisable={true}
             placeholder="Email Id"
             type="email"
             name="email"
             className="input-sec"
-            value={email}
+            value={inputState.email}
             onChange={(e) =>
               dispatchInput({
                 type: "SET_FIELD",
