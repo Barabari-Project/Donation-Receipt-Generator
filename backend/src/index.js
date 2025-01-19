@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 // Get the directory name of the current module
 const __dirname = path.dirname(__filename);
 
-dotenv.config({path: path.resolve(__dirname, '../.env')});
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000');
@@ -26,7 +26,7 @@ const allowlist = [
 // CORS options delegate
 const corsOptionsDelegate = (req, callback) => {
     const origin = req.header('Origin'); // Get Origin header from the request
-    const corsOptions = allowlist.includes(origin) 
+    const corsOptions = allowlist.includes(origin)
         ? { origin: true, credentials: true } // Allow this origin
         : { origin: false }; // Block this origin
     callback(null, corsOptions); // Pass options to CORS middleware
@@ -59,6 +59,14 @@ export const logger = winston.createLogger({
 app.use((req, res, next) => {
     logger.info(`Received a ${req.method} request for ${req.url}`);
     next();
+});
+
+app.get('/qr-code', (req, res) => {
+    res.redirect('https://linktr.ee/barabaricollective');
+});
+
+app.get('/contact', (req, res) => {
+    res.redirect('https://www.linkedin.com/company/the-barabari-collective');
 });
 
 // Health check endpoint
